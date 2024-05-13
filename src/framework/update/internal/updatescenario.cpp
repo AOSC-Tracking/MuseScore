@@ -40,20 +40,17 @@ using namespace muse::actions;
 
 void UpdateScenario::delayedInit()
 {
-    if (configuration()->needCheckForUpdate() && multiInstancesProvider()->instances().size() == 1) {
-        QTimer::singleShot(AUTO_CHECK_UPDATE_INTERVAL, [this]() {
-            doCheckForUpdate(false);
-        });
-    }
 }
 
 void UpdateScenario::checkForUpdate()
 {
-    if (isCheckStarted()) {
-        return;
-    }
+    QString str = qtrc("update", "Self-update is disabled by AOSC OS. Please update via oma/apt.");
 
-    doCheckForUpdate(true);
+    IInteractive::Text text(str.toStdString(), IInteractive::TextFormat::RichText);
+    IInteractive::ButtonData okBtn = interactive()->buttonData(IInteractive::Button::Ok);
+
+    interactive()->info(trc("update", "Self-update disabled"), text, { okBtn }, okBtn.btn,
+                        IInteractive::Option::WithIcon);
 }
 
 bool UpdateScenario::isCheckStarted() const
